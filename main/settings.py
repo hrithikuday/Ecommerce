@@ -145,6 +145,11 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = True  # Enable for production API access
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF configuration for production hosting
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+]
+
 # Login/Logout redirects
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
