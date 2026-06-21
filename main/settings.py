@@ -148,6 +148,8 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF configuration for production hosting
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://ecommerce.hrithikuday.me',
+    'https://*.hrithikuday.me',
 ]
 
 # Login/Logout redirects

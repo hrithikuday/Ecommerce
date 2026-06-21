@@ -65,6 +65,22 @@ Visit `http://127.0.0.1:8000/` in your browser.
 
 All API endpoints are under the `/api/` prefix.
 
+### Production API Root
+The production base URL is: `https://ecommerce.hrithikuday.me`
+
+Visiting the API Root (`GET https://ecommerce.hrithikuday.me/api/`) returns the list of available resource endpoints:
+
+```json
+{
+    "categories": "https://ecommerce.hrithikuday.me/api/categories/",
+    "products": "https://ecommerce.hrithikuday.me/api/products/",
+    "cart": "https://ecommerce.hrithikuday.me/api/cart/",
+    "orders": "https://ecommerce.hrithikuday.me/api/orders/",
+    "media-urls": "https://ecommerce.hrithikuday.me/api/media-urls/"
+}
+```
+
+---
 ### Authentication
 #### 1. Token Login
 Generates a REST token for programmatic API authentication.
