@@ -1,0 +1,165 @@
+{% extends 'xeon/base.html' %}
+
+{% block title %}XEON | Curated Collections{% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<!-- Hero Section -->
+<section class="relative bg-zinc-950 py-24 md:py-32 overflow-hidden border-b border-zinc-900">
+    <!-- Visual Accent Grid -->
+    <div
+        class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]">
+    </div>
+    <div
+        class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px] pointer-events-none">
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
+        <h1 class="text-xs font-semibold tracking-[0.4em] text-zinc-400 uppercase">THE XEON COLLECTION</h1>
+        <h2 class="text-4xl md:text-6xl font-extralight tracking-tight font-outfit text-white leading-tight">
+            Minimalist Elegance.<br>
+            <span class="font-normal text-zinc-300">Maximum Precision.</span>
+        </h2>
+        <p class="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed tracking-wider">
+            Explore our meticulously engineered products designed for seamless integration into high-performance
+            lifestyles.
+        </p>
+    </div>
+</section>
+{% endif %}
+
+<!-- Filter and Search Controls -->
+<section class="bg-zinc-950 py-8 border-b border-zinc-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <!-- Category Filters -->
+        <div class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-4 md:pb-0 scrollbar-none">
+            <a href="{% url 'home' %}"
+                class="px-4 py-2 text-xs font-medium tracking-wider rounded-full border transition-all {% if not selected_category %}bg-white text-black border-white{% else %}border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700{% endif %}">
+                ALL PRODUCTS
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                class="px-4 py-2 text-xs font-medium tracking-wider rounded-full border transition-all whitespace-nowrap {% if selected_category == cat.slug %}bg-white text-black border-white{% else %}border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700{% endif %}">
+                {{ cat.name|upper }} ({{ cat.product_count }})
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{% url 'home' %}" class="relative w-full md:w-80">
+            {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+            {% endif %}
+            <input type="text" name="q" value="{{ search_query|default:'' }}" placeholder="Search collection..."
+                class="w-full pl-4 pr-10 py-2.5 bg-zinc-900 border border-zinc-850 text-white text-xs tracking-wider rounded-none focus:outline-none focus:border-white placeholder-zinc-500 transition-colors">
+            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- Product Grid Section -->
+<section class="py-16 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Active Search Summary -->
+        {% if search_query or selected_category %}
+        <div class="mb-8 flex items-center justify-between">
+            <p class="text-xs text-zinc-500">
+                Showing results for 
+                {% if selected_category %}<span class="text-zinc-200">Category "{{ selected_category }}"</span>{% endif %}
+                {% if search_query %}{% if selected_category %} and {% endif %}<span class="text-zinc-200">Search "{{ search_query }}"</span>{% endif %}
+            </p>
+            <a href="{% url 'home' %}" class="text-xs text-white underline hover:opacity-80">Clear filters</a>
+        </div>
+        {% endif %}
+
+        <!-- Empty Results -->
+        {% if not products %}
+        <div class="text-center py-20 border border-dashed border-zinc-900 space-y-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1"
+                stroke="currentColor" class="w-12 h-12 mx-auto text-zinc-600">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+            <p class="text-sm text-zinc-500">No products found in this selection.</p>
+        </div>
+        {% else %}
+        <!-- Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for prod in products %}
+            <div
+                class="product-card group flex flex-col bg-zinc-900/40 border border-zinc-900/80 hover:border-zinc-800 transition-all duration-300">
+                <!-- Image Area -->
+                <div class="relative overflow-hidden aspect-square bg-zinc-950 flex items-center justify-center">
+                    <img src="{{ prod.get_image_url }}" alt="{{ prod.name }}"
+                        class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+
+                    <!-- Stock Alert Badge -->
+                    {% if prod.stock == 0 %}
+                    <span
+                        class="absolute top-3 left-3 bg-red-950/80 border border-red-900 text-red-200 text-[10px] font-semibold tracking-wider px-2 py-1 uppercase">
+                        OUT OF STOCK
+                    </span>
+                    {% elif prod.stock <= 5 %} <span
+                        class="absolute top-3 left-3 bg-amber-950/80 border border-amber-900 text-amber-200 text-[10px] font-semibold tracking-wider px-2 py-1 uppercase">
+                        ONLY {{ prod.stock }} LEFT
+                        </span>
+                        {% endif %}
+                </div>
+
+                <!-- Info Area -->
+                <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+                    <div class="space-y-1">
+                        <span class="text-[9px] tracking-[0.2em] font-semibold text-zinc-500 uppercase">{{ prod.category.name }}</span>
+                        <h3
+                            class="font-outfit text-base font-normal tracking-wide text-zinc-100 group-hover:text-white transition-colors">
+                            {{ prod.name }}
+                        </h3>
+                        <p class="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                            {{ prod.description }}
+                        </p>
+                    </div>
+
+                    <!-- Price & Actions -->
+                    <div class="flex items-center justify-between pt-4 border-t border-zinc-900/60">
+                        <span class="font-outfit text-sm font-medium text-white">{{ prod.currency }}{{ prod.price }}</span>
+
+                        <div class="flex items-center space-x-2">
+                            <a href="{% url 'product_detail' slug=prod.slug %}"
+                                class="p-2 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all"
+                                title="View Details">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </a>
+                            {% if prod.stock > 0 %}
+                            <a href="{% url 'add_to_cart' product_id=prod.id %}"
+                                class="px-3 py-2 bg-white text-black hover:bg-zinc-200 font-semibold text-[10px] tracking-wider uppercase transition-colors">
+                                ADD TO CART
+                            </a>
+                            {% else %}
+                            <button disabled
+                                class="px-3 py-2 bg-zinc-800 text-zinc-500 font-semibold text-[10px] tracking-wider uppercase cursor-not-allowed">
+                                UNAVAILABLE
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

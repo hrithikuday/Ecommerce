@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}XEON | Minimalist Luxury E-Commerce{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        zinc: {
+                            950: '#09090b',
+                            900: '#18181b',
+                            800: '#27272a',
+                            700: '#3f3f46',
+                            600: '#52525b',
+                            500: '#71717a',
+                            400: '#a1a1aa',
+                            300: '#d4d4d8',
+                            200: '#e4e4e7',
+                            100: '#f4f4f5',
+                            50: '#fafafa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #09090b;
+            color: #fafafa;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="flex flex-col min-h-screen selection:bg-zinc-100 selection:text-zinc-900 overflow-x-hidden">
+
+    <!-- Global Header -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-900/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Branding -->
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="group flex items-center gap-2">
+                        <span
+                            class="font-outfit text-2xl font-light tracking-[0.25em] text-white group-hover:opacity-80 transition-opacity">XEON</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'home' %}"
+                        class="text-sm font-medium text-zinc-400 hover:text-white transition-colors tracking-wide">COLLECTIONS</a>
+                    <span class="text-zinc-800">|</span>
+                    {% if user.is_authenticated %}
+                    <!-- Account Dropdown Menu -->
+                    <div class="relative inline-block text-left" id="account-dropdown-container">
+                        <button type="button" onclick="toggleAccountDropdown()" id="account-menu-button"
+                            class="text-xs font-semibold tracking-[0.2em] text-zinc-300 hover:text-white uppercase flex items-center gap-1.5 focus:outline-none transition-colors">
+                            ACCOUNT ({{ user.username }})
+                            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5">
+                                </path>
+                            </svg>
+                        </button>
+
+                        <div id="account-dropdown"
+                            class="hidden absolute right-0 mt-3 w-56 bg-zinc-950 border border-zinc-850 shadow-2xl z-50 py-2">
+                            <a href="{% url 'dashboard' %}"
+                                class="block px-4 py-2.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">
+                                MY ORDERS &amp; ADDRESS
+                            </a>
+
+
+                            <div class="border-t border-zinc-900 my-1.5"></div>
+
+                            <a href="{% url 'logout' %}"
+                                class="block px-4 py-2.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">
+                                LOG OUT
+                            </a>
+
+                            <form method="POST" action="{% url 'delete_account' %}"
+                                onsubmit="return confirm('WARNING: Are you sure you want to delete your account? All historical order records will be permanently erased.');"
+                                class="block w-full border-t border-zinc-900 mt-1.5 pt-1.5">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-xs text-red-500 hover:text-red-400 hover:bg-red-950/10 transition-colors font-medium">
+                                    DELETE ACCOUNT
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}"
+                        class="text-sm font-medium text-zinc-400 hover:text-white transition-colors tracking-wide">SIGN
+                        IN</a>
+                    <a href="{% url 'signup' %}"
+                        class="px-4 py-2 border border-white text-xs font-semibold tracking-wider text-black bg-white hover:bg-zinc-100 rounded-none transition-all duration-300">REGISTER</a>
+                    {% endif %}
+                </nav>
+
+                <!-- Icon Controls (Cart / Mobile Menu) -->
+                <div class="flex items-center space-x-6">
+                    <!-- Cart Indicator -->
+                    <a href="{% url 'cart' %}"
+                        class="relative flex items-center text-zinc-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        {% if cart_count > 0 %}
+                        <span
+                            class="absolute -top-1.5 -right-2.5 bg-white text-black text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center border border-zinc-950 font-outfit">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Mobile Navigation Menu Toggle -->
+                    <button id="mobile-menu-btn" class="md:hidden text-zinc-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu"
+            class="hidden md:hidden border-t border-zinc-900 bg-zinc-950/95 py-4 px-6 space-y-3 transition-all duration-300">
+            <a href="{% url 'home' %}"
+                class="block text-sm font-medium text-zinc-400 hover:text-white py-1">COLLECTIONS</a>
+            {% if user.is_authenticated %}
+            <div class="pt-2 border-t border-zinc-900/60 space-y-2">
+                <span class="block text-xs font-semibold text-white py-1">ACCOUNT: {{ user.username }}</span>
+                <a href="{% url 'dashboard' %}" class="block text-sm font-medium text-zinc-400 hover:text-white py-1">MY
+                    ORDERS &amp; ADDRESS</a>
+
+                <a href="{% url 'logout' %}"
+                    class="block text-sm font-medium text-zinc-400 hover:text-white py-1">LOGOUT</a>
+
+                <form method="POST" action="{% url 'delete_account' %}"
+                    onsubmit="return confirm('WARNING: Are you sure you want to delete your account? All historical order records will be permanently erased.');"
+                    class="block w-full pt-2 border-t border-zinc-900">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xs text-red-500 hover:text-red-400 font-medium">DELETE
+                        ACCOUNT</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="pt-2 border-t border-zinc-900/60 flex flex-col gap-2">
+                <a href="{% url 'login' %}" class="text-sm font-medium text-zinc-400 hover:text-white py-1">SIGN IN</a>
+                <a href="{% url 'signup' %}"
+                    class="w-full text-center py-2 border border-white text-xs font-semibold tracking-wider text-black bg-white rounded-none">REGISTER</a>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Messaging System -->
+    {% if messages %}
+    <div class="fixed top-24 right-4 z-50 max-w-sm space-y-2">
+        {% for message in messages %}
+        <div
+            class="px-4 py-3 shadow-lg rounded-none border {% if message.tags == 'error' %}bg-red-950/80 border-red-900 text-red-100{% else %}bg-zinc-900/90 border-zinc-800 text-zinc-100{% endif %} flex items-start gap-3 backdrop-blur-md animate-fade-in duration-300">
+            <div class="flex-1 text-xs font-medium tracking-wide">
+                {{ message }}
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-zinc-500 hover:text-zinc-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path
+                        d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="border-t border-zinc-900 bg-zinc-950 text-zinc-500 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2 space-y-4">
+                    <span class="font-outfit text-xl font-light tracking-[0.25em] text-white">XEON</span>
+                    <p class="text-xs text-zinc-500 leading-relaxed max-w-sm">
+                        Curating minimalist luxury, precision engineered software, and bespoke physical assets for
+                        individuals seeking structural excellence.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-outfit text-xs font-semibold uppercase tracking-wider text-white mb-4">PLATFORM</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="{% url 'home' %}" class="hover:text-white transition-colors">Store Collections</a>
+                        </li>
+                        <li><a href="{% url 'dashboard' %}" class="hover:text-white transition-colors">Client
+                                Workspace</a></li>
+                        <li><a href="/api/" class="hover:text-white transition-colors">Developer REST API</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-outfit text-xs font-semibold uppercase tracking-wider text-white mb-4">SECURITY</h4>
+                    <p class="text-xs text-zinc-600 leading-relaxed">
+                        End-to-end tokenized workflows with session locks, and strict CSRF boundaries protecting
+                        checkout.
+                    </p>
+                </div>
+            </div>
+            <div
+                class="mt-12 pt-8 border-t border-zinc-900/60 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-[10px] tracking-wider text-zinc-600">
+                    &copy; 2026 XEON INC. ALL RIGHTS RESERVED.
+                </p>
+                <div class="flex space-x-6 text-[10px] tracking-wider">
+                    <a href="#" class="hover:text-white transition-colors">PRIVACY POLICY</a>
+                    <a href="#" class="hover:text-white transition-colors">TERMS OF SERVICE</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Desktop dropdown and mobile menu toggle script -->
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        function toggleAccountDropdown() {
+            const dropdown = document.getElementById('account-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const container = document.getElementById('account-dropdown-container');
+            const dropdown = document.getElementById('account-dropdown');
+            if (container && dropdown && !container.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

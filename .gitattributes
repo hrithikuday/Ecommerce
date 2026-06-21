@@ -1,0 +1,2 @@
+# Force bash scripts to use Linux line endings (LF) to prevent Render build errors
+*.sh text eol=lf

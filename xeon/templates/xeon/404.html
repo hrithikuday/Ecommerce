@@ -1,0 +1,33 @@
+{% extends 'xeon/base.html' %}
+
+{% block title %}XEON | Page Not Found{% endblock %}
+
+{% block content %}
+<section class="min-h-[70vh] flex items-center justify-center bg-zinc-950 relative overflow-hidden">
+    <!-- Ambient background glow -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="max-w-md w-full px-6 text-center relative z-10 space-y-8 py-20">
+        <!-- Giant 404 Header -->
+        <h1 class="font-outfit text-8xl md:text-9xl font-extralight tracking-widest text-zinc-600 select-none">
+            404
+        </h1>
+        
+        <!-- Messages -->
+        <div class="space-y-3">
+            <h2 class="font-outfit text-sm font-semibold tracking-[0.3em] text-white uppercase">PAGE NOT FOUND</h2>
+            <p class="text-xs text-zinc-500 max-w-xs mx-auto leading-relaxed tracking-wider">
+                The resource you are looking for has been moved, renamed, or does not exist.
+            </p>
+        </div>
+
+        <!-- Navigation Button -->
+        <div class="pt-4">
+            <a href="{% url 'home' %}" 
+               class="inline-block px-8 py-3.5 border border-white text-xs font-semibold tracking-widest text-black bg-white hover:bg-zinc-200 uppercase transition-colors rounded-none">
+                RETURN TO COLLECTIONS
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'xeon/base.html' %}
+
+{% block title %}XEON | Secure Checkout{% endblock %}
+
+{% block content %}
+<section class="py-16 md:py-24 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <h1 class="font-outfit text-2xl md:text-3xl font-light tracking-widest text-white mb-12 uppercase">
+            SECURE CHECKOUT
+        </h1>
+
+        <!-- Split Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            <!-- Left: Checkout Forms -->
+            <div class="lg:col-span-7 bg-zinc-900/10 border border-zinc-900 p-8 space-y-8">
+                <form method="POST" action="{% url 'checkout' %}" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    <!-- Section 1: Shipping Address -->
+                    <div class="space-y-4">
+                        <h3 class="font-outfit text-sm font-semibold tracking-widest text-white uppercase flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">1</span>
+                            SHIPPING ADDRESS
+                        </h3>
+                        <div class="space-y-2">
+                            <label for="shipping_address" class="block text-[10px] tracking-wider text-zinc-500 uppercase">Street Address</label>
+                            <textarea id="shipping_address" name="shipping_address" required rows="3" 
+                                      class="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 text-white text-xs tracking-wider rounded-none focus:outline-none focus:border-white placeholder-zinc-650 transition-colors"
+                                      placeholder="123 Luxury Lane, Beverly Hills, CA 90210">{{ user.address|default:'' }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Billing Address -->
+                    <div class="space-y-4">
+                        <h3 class="font-outfit text-sm font-semibold tracking-widest text-white uppercase flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">2</span>
+                            BILLING ADDRESS
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="same_as_shipping" checked onchange="toggleBilling()"
+                                   class="rounded border-zinc-800 text-black bg-zinc-900 focus:ring-0 focus:ring-offset-0">
+                            <label for="same_as_shipping" class="text-xs text-zinc-400 select-none cursor-pointer">Billing address is same as shipping address</label>
+                        </div>
+                        <div id="billing_address_container" class="space-y-2 hidden">
+                            <label for="billing_address" class="block text-[10px] tracking-wider text-zinc-500 uppercase">Street Address</label>
+                            <textarea id="billing_address" name="billing_address" rows="3" 
+                                      class="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 text-white text-xs tracking-wider rounded-none focus:outline-none focus:border-white placeholder-zinc-650 transition-colors"
+                                      placeholder="Billing Street Address"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Payment Method -->
+                    <div class="space-y-4">
+                        <h3 class="font-outfit text-sm font-semibold tracking-widest text-white uppercase flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">3</span>
+                            PAYMENT METHOD
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Card Option -->
+                            <label class="relative flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 cursor-pointer select-none">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="payment_method" value="Credit Card" checked 
+                                           class="text-white bg-zinc-950 focus:ring-0">
+                                    <span class="text-xs font-medium text-white">Credit / Debit Card</span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-zinc-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-10.5-11.25h10.5a2.25 2.25 0 012.25 2.25v6.75a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-6.75a2.25 2.25 0 012.25-2.25z" />
+                                </svg>
+                            </label>
+
+                            <!-- PayPal Option -->
+                            <label class="relative flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 cursor-pointer select-none opacity-60 hover:opacity-100 transition-opacity">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="payment_method" value="PayPal" 
+                                           class="text-white bg-zinc-950 focus:ring-0">
+                                    <span class="text-xs font-medium text-white">PayPal</span>
+                                </div>
+                                <span class="text-[10px] font-bold italic tracking-wider text-blue-400">PayPal</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" 
+                            class="w-full py-4 text-center text-xs font-semibold tracking-[0.25em] uppercase bg-white text-black hover:bg-zinc-200 transition-colors rounded-none">
+                        AUTHORIZE &amp; PLACE ORDER ({{ cart.get_total_price_display }})
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right: Order Summary Sidebar -->
+            <div class="lg:col-span-5 bg-zinc-900/30 border border-zinc-900 p-8 space-y-6">
+                <h3 class="font-outfit text-sm font-semibold tracking-widest text-white uppercase">BAG ITEMS</h3>
+                
+                <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                    {% for item in cart.items.all %}
+                        <div class="flex items-center justify-between gap-4 py-2 border-b border-zinc-900/40">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-zinc-950 border border-zinc-900 flex-shrink-0">
+                                    <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}" class="object-cover w-full h-full">
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-medium text-white line-clamp-1">{{ item.product.name }}</h4>
+                                    <p class="text-[10px] text-zinc-500 font-light">Qty: {{ item.quantity }}</p>
+                                </div>
+                            </div>
+                            <span class="font-outfit text-xs text-white">{{ item.get_total_price_display }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="space-y-3 pt-4 border-t border-zinc-900 text-xs">
+                    <div class="flex justify-between py-1">
+                        <span class="text-zinc-500">Subtotal</span>
+                        <span class="text-zinc-300">{{ cart.get_total_price_display }}</span>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span class="text-zinc-500">Shipping</span>
+                        <span class="text-emerald-400 uppercase font-medium tracking-wide">Free</span>
+                    </div>
+                    <div class="flex justify-between py-2 text-sm font-medium border-t border-zinc-900">
+                        <span class="text-white">Order Total</span>
+                        <span class="text-white font-outfit font-semibold">{{ cart.get_total_price_display }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- Toggle billing address script -->
+<script>
+    function toggleBilling() {
+        const checkbox = document.getElementById('same_as_shipping');
+        const container = document.getElementById('billing_address_container');
+        const textarea = document.getElementById('billing_address');
+        
+        if (checkbox.checked) {
+            container.classList.add('hidden');
+            textarea.removeAttribute('required');
+        } else {
+            container.classList.remove('hidden');
+            textarea.setAttribute('required', 'true');
+        }
+    }
+</script>
+{% endblock %}
