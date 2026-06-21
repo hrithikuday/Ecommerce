@@ -18,6 +18,7 @@ if settings.DEBUG:
 handler404 = 'xeon.views.custom_404_view'
 
 # Catch-all pattern to display custom 404 page in local testing (DEBUG = True)
-urlpatterns += [
-    re_path(r'^.*$', xeon_views.custom_404_view, name='custom_404'),
-]
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^.*$', xeon_views.custom_404_view, name='custom_404'),
+    ]
