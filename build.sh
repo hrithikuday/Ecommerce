@@ -10,3 +10,6 @@ python manage.py collectstatic --no-input
 
 # Run migrations
 python manage.py migrate
+
+# Seed data on every deploy (required for ephemeral SQLite database)
+python seed_data.py
